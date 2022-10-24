@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.provider.Settings;
+import android.os.Build;
 
 import java.io.InputStream;
 
@@ -59,9 +60,14 @@ public class UnityDownloaderActivity extends Activity implements IDownloaderClie
 			intentToLaunchMainActivityFromNotification.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 			intentToLaunchMainActivityFromNotification.setAction("android.intent.action.MAIN");
 			intentToLaunchMainActivityFromNotification.addCategory("android.intent.category.LAUNCHER");
-			
+
+            int pendingIntentFlag = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= 31) {
+                pendingIntentFlag = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
+            }
+
 			// Build PendingIntent used to open this activity from Notification
-			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intentToLaunchMainActivityFromNotification, PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intentToLaunchMainActivityFromNotification, pendingIntentFlag);
 			// Request to start the download
 			int startResult = DownloaderClientMarshaller.startDownloadServiceIfRequired(this, pendingIntent, UnityDownloaderService.class);
 			
